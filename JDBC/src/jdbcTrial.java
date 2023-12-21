@@ -30,7 +30,9 @@ public class jdbcTrial {
 	                System.out.println("Connected to the database!");
 	                
 	                // Create database
-	                createDatabase(connection , "User");
+//	                createDatabase(connection , "User");
+	                useDatabase(connection, "User");
+	                createTableUser(connection);
 	            } else {
 	                System.out.println("Failed to make connection!");
 	            }
@@ -55,6 +57,35 @@ public class jdbcTrial {
 	            String createDatabaseSQL = "CREATE DATABASE " + databaseName;
 	            statement.executeUpdate(createDatabaseSQL);
 	            System.out.println("Database '" + databaseName + "' created successfully.");
+	            statement.close();
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	        }
+	    }
+	 
+	 private static void useDatabase(Connection connection, String databaseName) {
+		 try {
+			 Statement statement = connection.createStatement();
+			 String useDatabaseSQL = "USE " + databaseName;
+			 statement.execute(useDatabaseSQL);
+			 System.out.println("Using database: " + databaseName);
+			 statement.close();
+		 } catch (SQLException e) {
+			 e.printStackTrace();
+		 }
+	 }
+	 
+	 private static void createTableUser(Connection connection) {
+	        try {
+	            Statement statement = connection.createStatement();
+	            String createTableSQL = "CREATE TABLE User ("
+	                    + "id INT AUTO_INCREMENT PRIMARY KEY,"
+	                    + "username VARCHAR(50) NOT NULL,"
+	                    + "email VARCHAR(100) NOT NULL,"
+	                    + "password VARCHAR(50) NOT NULL"
+	                    + ")";
+	            statement.executeUpdate(createTableSQL);
+	            System.out.println("Table 'User' created successfully.");
 	            statement.close();
 	        } catch (SQLException e) {
 	            e.printStackTrace();
