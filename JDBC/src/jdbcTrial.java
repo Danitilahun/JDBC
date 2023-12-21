@@ -39,8 +39,10 @@ public class jdbcTrial {
 //	                insertMultipleUsers(connection);
 	                selectAllUsers(connection);
 	                
-	                selectUser(connection, "password", "pass123");
-	                selectUser(connection, "email", "alice@example.com");
+//	                selectUser(connection, "password", "pass123");
+//	                selectUser(connection, "email", "alice@example.com");
+//	                updateUser(connection , "new" , 1);
+	                deleteUserByID(connection, 1);
 	            } else {
 	                System.out.println("Failed to make connection!");
 	            }
@@ -189,6 +191,47 @@ public class jdbcTrial {
 	            }
 
 	            resultSet.close();
+	            preparedStatement.close();
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	        }
+	    }
+	    
+	    public static void updateUser(Connection connection ,String password , int Id) {
+	    	try {
+	    		String updateSQLQuery = "UPDATE User SET password = ? WHERE id = ?";
+	    		PreparedStatement preparedStatement = connection.prepareStatement(updateSQLQuery);
+	    		preparedStatement.setString(1, password);
+	    		preparedStatement.setInt(2, Id);
+	    		
+	    		int rowsAffected = preparedStatement.executeUpdate();
+	    		
+	    		
+	    		if (rowsAffected > 0) {
+	                System.out.println("Password updated successfully for user id: " + Id);
+	            } else {
+	                System.out.println("User not found or password not updated.");
+	            }
+	    	}
+	    	catch(SQLException e) {
+	    		e.printStackTrace();
+	    	}
+	    }
+	    
+	    private static void deleteUserByID(Connection connection, int userId) {
+	        try {
+	            String deleteSQL = "DELETE FROM User WHERE id = ?";
+	            PreparedStatement preparedStatement = connection.prepareStatement(deleteSQL);
+	            preparedStatement.setInt(1, userId);
+
+	            int rowsAffected = preparedStatement.executeUpdate();
+
+	            if (rowsAffected > 0) {
+	                System.out.println("User with ID " + userId + " deleted successfully.");
+	            } else {
+	                System.out.println("User not found or deletion failed.");
+	            }
+
 	            preparedStatement.close();
 	        } catch (SQLException e) {
 	            e.printStackTrace();
