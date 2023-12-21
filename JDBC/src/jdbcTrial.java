@@ -1,6 +1,7 @@
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 public class jdbcTrial {
 	 public static void main(String[] args) {
@@ -8,7 +9,7 @@ public class jdbcTrial {
 		 	String driver = "com.mysql.cj.jdbc.Driver";
 		 	
 	        // JDBC URL for database 
-	        String jdbcUrl = "jdbc:mysql://localhost:3306/jdbctest";
+	        String jdbcUrl = "jdbc:mysql://localhost:3306/";
 	        
 	        // Database credentials (replace with your username and password)
 	        String username = "root";
@@ -28,6 +29,8 @@ public class jdbcTrial {
 	            if (connection != null) {
 	                System.out.println("Connected to the database!");
 	                
+	                // Create database
+	                createDatabase(connection , "User");
 	            } else {
 	                System.out.println("Failed to make connection!");
 	            }
@@ -43,6 +46,18 @@ public class jdbcTrial {
 	            } catch (SQLException e) {
 	                e.printStackTrace();
 	            }
+	        }
+	    }
+	 
+	 private static void createDatabase(Connection connection, String databaseName) {
+	        try {
+	            Statement statement = connection.createStatement();
+	            String createDatabaseSQL = "CREATE DATABASE " + databaseName;
+	            statement.executeUpdate(createDatabaseSQL);
+	            System.out.println("Database '" + databaseName + "' created successfully.");
+	            statement.close();
+	        } catch (SQLException e) {
+	            e.printStackTrace();
 	        }
 	    }
 }
