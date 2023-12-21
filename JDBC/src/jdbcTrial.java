@@ -1,5 +1,6 @@
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -32,7 +33,9 @@ public class jdbcTrial {
 	                // Create database
 //	                createDatabase(connection , "User");
 	                useDatabase(connection, "User");
-	                createTableUser(connection);
+//	                createTableUser(connection);
+	                insertUserData(connection, "JohnDoe", "john@example.com", "pass123");
+	                insertMultipleUsers(connection);
 	            } else {
 	                System.out.println("Failed to make connection!");
 	            }
@@ -86,6 +89,52 @@ public class jdbcTrial {
 	                    + ")";
 	            statement.executeUpdate(createTableSQL);
 	            System.out.println("Table 'User' created successfully.");
+	            statement.close();
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	        }
+	    }
+	// Function to insert data into the 'User' table
+	    private static void insertUserData(Connection connection, String username, String email, String password) {
+	        try {
+	            String insertSQL = "INSERT INTO User (username, email, password) VALUES (?, ?, ?)";
+	            PreparedStatement preparedStatement = connection.prepareStatement(insertSQL);
+	            preparedStatement.setString(1, username);
+	            preparedStatement.setString(2, email);
+	            preparedStatement.setString(3, password);
+
+	            int rowsAffected = preparedStatement.executeUpdate();
+	            if (rowsAffected > 0) {
+	                System.out.println("Data inserted successfully.");
+	            } else {
+	                System.out.println("Failed to insert data.");
+	            }
+	            preparedStatement.close();
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	        }
+	    }
+	    
+	 // Function to insert multiple users into the 'User' table using Statement
+	    private static void insertMultipleUsers(Connection connection) {
+	        try {
+	            Statement statement = connection.createStatement();
+
+	            String[] usersData = {
+	                    "INSERT INTO User (username, email, password) VALUES ('Alice', 'alice@example.com', 'pass123')",
+	                    "INSERT INTO User (username, email, password) VALUES ('Bob', 'bob@example.com', 'pass456')",
+	                    "INSERT INTO User (username, email, password) VALUES ('Charlie', 'charlie@example.com', 'pass789')"
+	                   
+	            };
+
+	            for (String userData : usersData) {
+	                statement.addBatch(userData);
+	            }
+
+	            int[] rowsAffected = statement.executeBatch();
+
+	            System.out.println("Rows affected: " + rowsAffected.length);
+
 	            statement.close();
 	        } catch (SQLException e) {
 	            e.printStackTrace();
