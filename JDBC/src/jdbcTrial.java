@@ -1,6 +1,7 @@
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -34,8 +35,12 @@ public class jdbcTrial {
 //	                createDatabase(connection , "User");
 	                useDatabase(connection, "User");
 //	                createTableUser(connection);
-	                insertUserData(connection, "JohnDoe", "john@example.com", "pass123");
-	                insertMultipleUsers(connection);
+//	                insertUserData(connection, "JohnDoe", "john@example.com", "pass123");
+//	                insertMultipleUsers(connection);
+	                selectAllUsers(connection);
+	                
+	                selectUser(connection, "password", "pass123");
+	                selectUser(connection, "email", "alice@example.com");
 	            } else {
 	                System.out.println("Failed to make connection!");
 	            }
@@ -136,6 +141,55 @@ public class jdbcTrial {
 	            System.out.println("Rows affected: " + rowsAffected.length);
 
 	            statement.close();
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	        }
+	    }
+	    
+	    private static void selectAllUsers(Connection connection) {
+	        try {
+	            Statement statement = connection.createStatement();
+	            String selectSQL = "SELECT * FROM User";
+	            ResultSet resultSet = statement.executeQuery(selectSQL);
+	           
+	            while (resultSet.next()) {
+	                int id = resultSet.getInt("id");
+	                String username = resultSet.getString("username");
+	                String email = resultSet.getString("email");
+	                String password = resultSet.getString("password");
+
+	                System.out.println("ID: " + id + ", Username: " + username + ", Email: " + email + ", Password: " + password);
+	            }
+
+	            resultSet.close();
+	            statement.close();
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	        }
+	    }
+	    
+	 // Function to select user based on a specified condition and value
+	    private static void selectUser(Connection connection, String conditionType, String value) {
+	        try {
+	            String selectSQL = "SELECT * FROM User WHERE " + conditionType + " = ?";
+	            PreparedStatement preparedStatement = connection.prepareStatement(selectSQL);
+	            preparedStatement.setString(1, value);
+
+	            ResultSet resultSet = preparedStatement.executeQuery();
+
+	            while (resultSet.next()) {
+	                // Retrieve user data and print
+	                // Adjust column names as per your database schema
+	                int userId = resultSet.getInt("id");
+	                String username = resultSet.getString("username");
+	                String email = resultSet.getString("email");
+	                String password = resultSet.getString("password");
+
+	                System.out.println("User ID: " + userId + ", Username: " + username + ", Email: " + email + ", Password: " + password);
+	            }
+
+	            resultSet.close();
+	            preparedStatement.close();
 	        } catch (SQLException e) {
 	            e.printStackTrace();
 	        }
